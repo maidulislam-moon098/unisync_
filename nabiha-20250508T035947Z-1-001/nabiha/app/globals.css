@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #070709;
+  --foreground: #ffffff;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --error-bg: rgba(127, 29, 29, 0.4);
+  --error-border: #7f1d1d;
+  --input-bg: #16161d;
+  --input-text: #ffffff;
+  --card: #0f0f14;
+  --card-hover: #16161d;
+}
+
+body {
+  @apply bg-background text-foreground;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200 w-full;
+  }
+
+  .btn-outline {
+    @apply border border-gray-800 hover:border-gray-600 text-gray-300 font-medium py-3 px-4 rounded-xl transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply bg-[#16161d] border border-gray-800 text-white rounded-xl px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-600;
+  }
+
+  .error-message {
+    @apply bg-error-bg border border-error-border text-red-300 px-4 py-3 rounded-xl mb-4 text-sm;
+  }
+
+  .sidebar-link {
+    @apply flex items-center px-8 py-3 text-sm font-medium rounded-xl transition-all duration-200;
+  }
+
+  .sidebar-link.active {
+    @apply text-white bg-gray-900 shadow-[0_0_15px_rgba(37,99,235,0.4)];
+  }
+
+  .sidebar-link:not(.active) {
+    @apply text-gray-300 hover:bg-gray-800 hover:text-white hover:shadow-[0_0_10px_rgba(37,99,235,0.3)];
+  }
+}
