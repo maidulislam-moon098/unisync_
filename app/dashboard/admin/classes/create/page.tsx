@@ -130,6 +130,10 @@ export default function CreateClass() {
         start_time: startDateTime,
         end_time: endDateTime,
         meeting_link: formData.meetingLink || null,
+        created_by: user.id, // Add the user ID as creator
+        reminder_sent: false, // Set default reminder_sent value
+        created_at: new Date().toISOString(), // Add created_at timestamp
+        updated_at: new Date().toISOString(), // Add updated_at timestamp
       }
 
       setDebugInfo(`Attempting to create class with data: ${JSON.stringify(classData, null, 2)}`)

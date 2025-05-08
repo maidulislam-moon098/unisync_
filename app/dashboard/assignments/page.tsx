@@ -134,6 +134,7 @@ export default function Assignments() {
           console.log("No enrollments found for student")
           // Set mock data if no real enrollments found (for demo purposes)
           setMockAssignments()
+          setLoading(false)
           return
         }
 
@@ -162,7 +163,7 @@ export default function Assignments() {
           const { data: allAssignments, error: assignmentsError } = await supabase
             .from("assignments")
             .select(`
-              id, title, description, due_date, max_points,
+              id, title, description, due_date, points_possible as max_points,
               course_id,
               courses:course_id (id, code, title)
             `)
@@ -200,7 +201,7 @@ export default function Assignments() {
                 title: assignment.title,
                 description: assignment.description,
                 due_date: assignment.due_date,
-                max_points: assignment.max_points,
+                max_points: assignment.max_points || 0, // Add default value
                 course: assignment.courses || {
                   id: assignment.course_id,
                   code: "Unknown",
@@ -209,8 +210,8 @@ export default function Assignments() {
                 submission: submission
                   ? {
                       id: submission.id,
-                      status: submission.status,
-                      grade: submission.grade,
+                      status: submission.status || "pending",
+                      grade: submission.grade !== undefined ? submission.grade : null,
                       submitted_at: submission.submitted_at,
                     }
                   : null,
@@ -231,22 +232,26 @@ export default function Assignments() {
           } catch (submissionError) {
             console.error("Error fetching submissions:", submissionError)
             // Continue without submissions data
+            setMockAssignments()
+            setLoading(false)
           }
         } catch (error) {
           console.error("Error fetching assignments:", error)
           setError("Failed to load assignments. Please try again later.")
           // Set mock data on error
           setMockAssignments()
-        } finally {
           setLoading(false)
         }
+      } catch (error) {
+        console.error("Error in fetchAssignments:", error)
+        setError("Failed to load assignments. Please try again later.")
+        setMockAssignments()
+        setLoading(false)
       }
-\
-      fetchAssignments()
     }
-    , [user, router])
 
-
+    fetchAssignments()
+  }, [user, router])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -277,7 +282,9 @@ export default function Assignments() {
         return <span className="bg-green-900 text-green-300 px-2 py-1 rounded text-xs">Graded</span>
       default:
         return (
-          <span className="bg-gray-900 text-gray-300 px-2 py-1 rounded text-xs">{assignment.submission.status}</span>
+          <span className="bg-gray-900 text-gray-300 px-2 py-1 rounded text-xs">
+            {assignment.submission.status || "Unknown"}
+          </span>
         )
     }
   }
@@ -383,9 +390,9 @@ export default function Assignments() {
                 <div className="mt-2 md:mt-0 flex flex-col items-start md:items-end">
                   {getStatusBadge(assignment)}
                   <p className="text-sm text-gray-400 mt-1">Due: {formatDate(assignment.due_date)}</p>
-                  {assignment.submission?.grade !== null && (
+                  {assignment.submission?.grade !== null && assignment.submission?.grade !== undefined && (
                     <p className="text-sm font-medium text-white mt-1">
-                      Grade: {assignment.submission.grade}/{assignment.max_points}
+                      Grade: {assignment.submission.grade}/{assignment.max_points || 0}
                     </p>
                   )}
                 </div>

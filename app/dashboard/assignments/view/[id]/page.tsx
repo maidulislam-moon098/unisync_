@@ -125,10 +125,10 @@ export default function ViewAssignment() {
           .from("assignment_submissions")
           .update({
             submission_text: submissionText,
-            file_url: fileUrl || submission.file_url,
-            file_name: fileName || submission.file_name,
-            file_type: fileType || submission.file_type,
-            file_size: fileSize || submission.file_size,
+            file_url: fileUrl || submission.file_url || null,
+            file_name: fileName || submission.file_name || null,
+            file_type: fileType || submission.file_type || null,
+            file_size: fileSize || submission.file_size || null,
             submitted_at: new Date().toISOString(),
             status: "submitted",
           })
@@ -136,7 +136,7 @@ export default function ViewAssignment() {
           .select()
 
         if (error) throw error
-        setSubmission(data[0])
+        setSubmission(data?.[0] || null)
       } else {
         // Create new submission
         const { data, error } = await supabase
@@ -297,7 +297,8 @@ export default function ViewAssignment() {
                     <div>
                       <p className="text-sm text-gray-400">Grade:</p>
                       <p className="text-md font-medium text-white">
-                        {submission.grade}/{assignment.max_points}
+                        {submission.grade !== null && submission.grade !== undefined ? submission.grade : "Not graded"}/
+                        {assignment?.max_points || 0}
                       </p>
                     </div>
                   </div>
